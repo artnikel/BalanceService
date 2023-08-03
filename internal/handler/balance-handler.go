@@ -34,13 +34,19 @@ func NewEntityBalance(srvBalance BalanceService, validate *validator.Validate) *
 // nolint dupl
 // Deposit calls SignUp method of Service by handler
 func (b *EntityBalance) Deposit(ctx context.Context, req *proto.DepositRequest) (*proto.DepositResponse, error) {
+	profileUUID, err := uuid.Parse(req.Balance.Profileid)
+	if err != nil {
+		return &proto.DepositResponse{
+			Error: "failed to parse Profileid",
+		}, nil
+	}
 	createdOperation := &model.Balance{
 		BalanceID: uuid.New(),
-		ProfileID: uuid.New(),
+		ProfileID: profileUUID,
 		Operation: req.Balance.Operation,
 	}
 
-	err := b.validate.VarCtx(ctx, createdOperation.Operation, "required,gt=0")
+	err = b.validate.VarCtx(ctx, createdOperation.Operation, "required,gt=0")
 	if err != nil {
 		logrus.Errorf("error: %v", err)
 		return &proto.DepositResponse{
@@ -64,13 +70,19 @@ func (b *EntityBalance) Deposit(ctx context.Context, req *proto.DepositRequest) 
 // nolint dupl
 // Withdraw calls SignUp method of Service by handler
 func (b *EntityBalance) Withdraw(ctx context.Context, req *proto.WithdrawRequest) (*proto.WithdrawResponse, error) {
+	profileUUID, err := uuid.Parse(req.Balance.Profileid)
+	if err != nil {
+		return &proto.WithdrawResponse{
+			Error: "failed to parse Profileid",
+		}, nil
+	}
 	createdOperation := &model.Balance{
 		BalanceID: uuid.New(),
-		ProfileID: uuid.New(),
+		ProfileID: profileUUID,
 		Operation: req.Balance.Operation,
 	}
 
-	err := b.validate.VarCtx(ctx, createdOperation.Operation, "required,gt=0")
+	err = b.validate.VarCtx(ctx, createdOperation.Operation, "required,gt=0")
 	if err != nil {
 		logrus.Errorf("error: %v", err)
 		return &proto.WithdrawResponse{
