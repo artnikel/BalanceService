@@ -59,7 +59,7 @@ func TestGetBalance(t *testing.T) {
 	}
 	srv.On("GetBalance", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(testBalance.Operation, nil).Once()
 	resp2, err := hndl.GetBalance(context.Background(), &proto.GetBalanceRequest{
-		Balanceid: protoBalance.Profileid,
+		Profileid: protoBalance.Profileid,
 	})
 	if resp2.Error != "" {
 		t.Errorf("error %v:", resp2.Error)

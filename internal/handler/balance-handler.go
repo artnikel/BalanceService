@@ -93,7 +93,7 @@ func (b *EntityBalance) Withdraw(ctx context.Context, req *proto.WithdrawRequest
 
 // GetBalance calls SignUp method of Service by handler
 func (b *EntityBalance) GetBalance(ctx context.Context, req *proto.GetBalanceRequest) (*proto.GetBalanceResponse, error) {
-	id := req.Balanceid
+	id := req.Profileid
 	err := b.validate.VarCtx(ctx, id, "required,uuid")
 	if err != nil {
 		logrus.Errorf("error: %v", err)

@@ -33,7 +33,7 @@ message WithdrawResponse{
 }
 
 message GetBalanceRequest{
-    string balanceid = 1;
+    string profileid = 1;
 }
 
 message GetBalanceResponse{
