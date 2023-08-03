@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+option go_package = "github.com/artnikel/BalanceService/proto";
+
+message Balance {
+    string balanceid = 1;
+    string profileid = 2;
+    double operation = 3;
+}
+
+service UserService {
+    rpc Deposit(DepositRequest) returns (DepositResponse);
+    rpc Withdraw(WithdrawRequest) returns (WithdrawResponse);
+    rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse);
+}
+
+message DepositRequest{
+    Balance balance = 1;
+}
+
+message DepositResponse{
+    string operation = 1;
+    string error = 2;
+}
+
+message WithdrawRequest{
+    Balance balance = 1;
+}
+
+message WithdrawResponse{
+    string operation = 1;
+    string error = 2;
+}
+
+message GetBalanceRequest{
+    string balanceid = 1;
+}
+
+message GetBalanceResponse{
+    double money = 1;
+    string error = 2;
+}
+
