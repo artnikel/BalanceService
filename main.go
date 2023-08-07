@@ -6,11 +6,11 @@ import (
 	"log"
 	"net"
 
+	"github.com/artnikel/BalanceService/bproto"
 	"github.com/artnikel/BalanceService/internal/config"
 	"github.com/artnikel/BalanceService/internal/handler"
 	"github.com/artnikel/BalanceService/internal/repository"
 	"github.com/artnikel/BalanceService/internal/service"
-	"github.com/artnikel/BalanceService/bproto"
 	"github.com/caarlos0/env"
 	"github.com/go-playground/validator/v10"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -51,7 +51,7 @@ func main() {
 		log.Fatalf("Cannot create listener: %s", err)
 	}
 	grpcServer := grpc.NewServer()
-	proto.RegisterUserServiceServer(grpcServer, pgHandl)
+	bproto.RegisterUserServiceServer(grpcServer, pgHandl)
 	err = grpcServer.Serve(lis)
 	if err != nil {
 		log.Fatalf("Failed to serve listener: %s", err)

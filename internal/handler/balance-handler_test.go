@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
+	"github.com/artnikel/BalanceService/bproto"
 	"github.com/artnikel/BalanceService/internal/handler/mocks"
 	"github.com/artnikel/BalanceService/internal/model"
-	"github.com/artnikel/BalanceService/bproto"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
@@ -25,18 +25,15 @@ var (
 func TestDepositAndWithDraw(t *testing.T) {
 	srv := new(mocks.BalanceService)
 	hndl := NewEntityBalance(srv, v)
-	protoBalance := &proto.Balance{
+	protoBalance := &bproto.Balance{
 		Balanceid: testBalance.BalanceID.String(),
 		Profileid: testBalance.ProfileID.String(),
 		Operation: testBalance.Operation,
 	}
 	srv.On("Deposit", mock.Anything, mock.AnythingOfType("*model.Balance")).Return(nil).Once()
-	resp, err := hndl.Deposit(context.Background(), &proto.DepositRequest{
+	_, err := hndl.Deposit(context.Background(), &bproto.DepositRequest{
 		Balance: protoBalance,
 	})
-	if resp.Error != "" {
-		t.Errorf("error %v:", resp.Error)
-	}
 	require.NoError(t, err)
 	srv.AssertExpectations(t)
 }
@@ -44,27 +41,22 @@ func TestDepositAndWithDraw(t *testing.T) {
 func TestGetBalance(t *testing.T) {
 	srv := new(mocks.BalanceService)
 	hndl := NewEntityBalance(srv, v)
-	protoBalance := &proto.Balance{
+	protoBalance := &bproto.Balance{
 		Balanceid: testBalance.BalanceID.String(),
 		Profileid: testBalance.ProfileID.String(),
 		Operation: testBalance.Operation,
 	}
 	srv.On("Deposit", mock.Anything, mock.AnythingOfType("*model.Balance")).Return(nil).Once()
-	resp, err := hndl.Deposit(context.Background(), &proto.DepositRequest{
+	_, err := hndl.Deposit(context.Background(), &bproto.DepositRequest{
 		Balance: protoBalance,
 	})
 	require.NoError(t, err)
-	if resp.Error != "" {
-		t.Errorf("error %v:", resp.Error)
-	}
 	srv.On("GetBalance", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(testBalance.Operation, nil).Once()
-	resp2, err := hndl.GetBalance(context.Background(), &proto.GetBalanceRequest{
+	resp, err := hndl.GetBalance(context.Background(), &bproto.GetBalanceRequest{
 		Profileid: protoBalance.Profileid,
 	})
-	if resp2.Error != "" {
-		t.Errorf("error %v:", resp2.Error)
-	}
-	require.Equal(t, resp2.Money, testBalance.Operation)
+
+	require.Equal(t, resp.Money, testBalance.Operation)
 	require.NoError(t, err)
 	srv.AssertExpectations(t)
 }

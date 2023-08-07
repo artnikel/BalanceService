@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/artnikel/BalanceService/proto";
+option go_package = "github.com/artnikel/BalanceService/bproto";
 
 message Balance {
     string balanceid = 1;

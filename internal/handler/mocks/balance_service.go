@@ -31,20 +31,20 @@ func (_m *BalanceService) Deposit(ctx context.Context, balance *model.Balance) e
 	return r0
 }
 
-// GetBalance provides a mock function with given fields: ctx, bId
-func (_m *BalanceService) GetBalance(ctx context.Context, bId uuid.UUID) (float64, error) {
-	ret := _m.Called(ctx, bId)
+// GetBalance provides a mock function with given fields: ctx, profileID
+func (_m *BalanceService) GetBalance(ctx context.Context, profileID uuid.UUID) (float64, error) {
+	ret := _m.Called(ctx, profileID)
 
 	var r0 float64
 	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) float64); ok {
-		r0 = rf(ctx, bId)
+		r0 = rf(ctx, profileID)
 	} else {
 		r0 = ret.Get(0).(float64)
 	}
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
-		r1 = rf(ctx, bId)
+		r1 = rf(ctx, profileID)
 	} else {
 		r1 = ret.Error(1)
 	}
