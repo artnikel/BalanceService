@@ -20,7 +20,6 @@ message DepositRequest{
 
 message DepositResponse{
     string operation = 1;
-    string error = 2;
 }
 
 message WithdrawRequest{
@@ -29,7 +28,6 @@ message WithdrawRequest{
 
 message WithdrawResponse{
     string operation = 1;
-    string error = 2;
 }
 
 message GetBalanceRequest{
@@ -38,6 +36,5 @@ message GetBalanceRequest{
 
 message GetBalanceResponse{
     double money = 1;
-    string error = 2;
 }
 
