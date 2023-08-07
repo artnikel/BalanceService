@@ -24,7 +24,7 @@ type BalanceService interface {
 type EntityBalance struct {
 	srvBalance BalanceService
 	validate   *validator.Validate
-	bproto.UnimplementedUserServiceServer
+	bproto.UnimplementedBalanceServiceServer
 }
 
 // NewEntityBalance accepts User Service interface and returns an object of *EntityUser

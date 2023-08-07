@@ -8,7 +8,7 @@ message Balance {
     double operation = 3;
 }
 
-service UserService {
+service BalanceService {
     rpc Deposit(DepositRequest) returns (DepositResponse);
     rpc Withdraw(WithdrawRequest) returns (WithdrawResponse);
     rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse);
