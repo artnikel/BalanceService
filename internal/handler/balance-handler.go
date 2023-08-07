@@ -58,7 +58,7 @@ func (b *EntityBalance) Deposit(ctx context.Context, req *bproto.DepositRequest)
 	}
 	strOperation := strconv.FormatFloat(req.Balance.Operation, 'f', -1, 64)
 	return &bproto.DepositResponse{
-		Operation: "Deposit of " + strOperation + " successfully made",
+		Operation: strOperation,
 	}, nil
 }
 
@@ -88,7 +88,7 @@ func (b *EntityBalance) Withdraw(ctx context.Context, req *bproto.WithdrawReques
 	}
 	strOperation := strconv.FormatFloat(req.Balance.Operation, 'f', -1, 64)
 	return &bproto.WithdrawResponse{
-		Operation: "Withdraw of " + strOperation + " successfully made",
+		Operation: strOperation,
 	}, nil
 }
 
