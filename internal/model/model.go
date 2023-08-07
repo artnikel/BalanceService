@@ -7,7 +7,7 @@ import (
 
 // Balance contains an info about the balance and will be written in a balance table
 type Balance struct {
-	BalanceID uuid.UUID `json:"balanceid" validate:"required,uuid"`
-	ProfileID uuid.UUID `json:"profileid" validate:"required,uuid"`
-	Operation float64   `json:"operation" validate:"required,gt=0"`
+	BalanceID uuid.UUID `json:"balanceid"`
+	ProfileID uuid.UUID `json:"profileid"`
+	Operation float64   `json:"operation"`
 }
