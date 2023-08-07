@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/artnikel/BalanceService/internal/model"
-	"github.com/artnikel/BalanceService/proto"
+	"github.com/artnikel/BalanceService/bproto"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"

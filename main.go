@@ -10,7 +10,7 @@ import (
 	"github.com/artnikel/BalanceService/internal/handler"
 	"github.com/artnikel/BalanceService/internal/repository"
 	"github.com/artnikel/BalanceService/internal/service"
-	"github.com/artnikel/BalanceService/proto"
+	"github.com/artnikel/BalanceService/bproto"
 	"github.com/caarlos0/env"
 	"github.com/go-playground/validator/v10"
 	"github.com/jackc/pgx/v5/pgxpool"
