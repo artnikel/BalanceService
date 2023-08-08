@@ -19,7 +19,7 @@ var (
 	}
 )
 
-func TestDepositAndWithDraw(t *testing.T) {
+func TestBalanceOperation(t *testing.T) {
 	rep := new(mocks.BalanceRepository)
 	srv := NewBalanceService(rep)
 	rep.On("BalanceOperation", mock.Anything, mock.AnythingOfType("*model.Balance")).Return(nil).Once()
@@ -46,7 +46,7 @@ func TestGetBalance(t *testing.T) {
 	rep.AssertExpectations(t)
 }
 
-func TestGetFakeBalance(t *testing.T) {
+func TestGetBalanceByWrongID(t *testing.T) {
 	rep := new(mocks.BalanceRepository)
 	srv := NewBalanceService(rep)
 	test := &model.Balance{}

@@ -16,7 +16,7 @@ import (
 
 var (
 	pg          *PgRepository
-	testBalance = model.Balance{
+	testBalance = &model.Balance{
 		BalanceID: uuid.New(),
 		ProfileID: uuid.New(),
 		Operation: 100.9,
@@ -77,22 +77,36 @@ func TestMain(m *testing.M) {
 	os.Exit(exitVal)
 }
 
-func TestBalanceOperation(t *testing.T) {
-	err := pg.BalanceOperation(context.Background(), &testBalance)
-	require.NoError(t, err)
-}
-
-func TestGetBalance(t *testing.T) {
-	testBalance.ProfileID = uuid.New()
-	testBalance.BalanceID = uuid.New()
-	err := pg.BalanceOperation(context.Background(), &testBalance)
+func TestOperationWithGetBalance(t *testing.T) {
+	err := pg.BalanceOperation(context.Background(), testBalance)
 	require.NoError(t, err)
 	money, err := pg.GetBalance(context.Background(), testBalance.ProfileID)
 	require.NoError(t, err)
-	require.NotEmpty(t, money)
+	require.Equal(t, money, testBalance.Operation)
 }
 
-func TestGetFakeBalance(t *testing.T) {
+func TestBalanceOperations(t *testing.T) {
+	testBalance.ProfileID = uuid.New()
+	testBalance.BalanceID = uuid.New()
+	testBalance.Operation = 800.5
+	err := pg.BalanceOperation(context.Background(), testBalance)
+	require.NoError(t, err)
+	testBalance.Operation = -700.5
+	testBalance.BalanceID = uuid.New()
+	err = pg.BalanceOperation(context.Background(), testBalance)
+	require.NoError(t, err)
+	money, err := pg.GetBalance(context.Background(), testBalance.ProfileID)
+	require.NoError(t, err)
+	require.Equal(t, money, 100.0)
+}
+
+func TestGetBalanceByFakeID(t *testing.T) {
 	money, _ := pg.GetBalance(context.Background(), uuid.Nil)
+	require.Empty(t, money)
+	money, _ = pg.GetBalance(context.Background(), uuid.New())
+	require.Empty(t, money)
+	fakeUUID, err := uuid.Parse("00000000-0000-0000-0000-41db8a3d9113")
+	require.NoError(t, err)
+	money, _ = pg.GetBalance(context.Background(), fakeUUID)
 	require.Empty(t, money)
 }
