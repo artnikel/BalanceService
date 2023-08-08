@@ -9,24 +9,15 @@ message Balance {
 }
 
 service BalanceService {
-    rpc Deposit(DepositRequest) returns (DepositResponse);
-    rpc Withdraw(WithdrawRequest) returns (WithdrawResponse);
+    rpc BalanceOperation(BalanceOperationRequest) returns (BalanceOperationResponse);
     rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse);
 }
 
-message DepositRequest{
+message BalanceOperationRequest{
     Balance balance = 1;
 }
 
-message DepositResponse{
-    string operation = 1;
-}
-
-message WithdrawRequest{
-    Balance balance = 1;
-}
-
-message WithdrawResponse{
+message BalanceOperationResponse{
     string operation = 1;
 }
 

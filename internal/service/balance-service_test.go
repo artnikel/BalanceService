@@ -23,23 +23,9 @@ func TestDepositAndWithDraw(t *testing.T) {
 	rep := new(mocks.BalanceRepository)
 	srv := NewBalanceService(rep)
 	rep.On("BalanceOperation", mock.Anything, mock.AnythingOfType("*model.Balance")).Return(nil).Once()
-	err := srv.Deposit(context.Background(), testBalance)
+	err := srv.BalanceOperation(context.Background(), testBalance)
 	require.NoError(t, err)
 	rep.AssertExpectations(t)
-}
-
-func TestWrongDepositAndWithdraw(t *testing.T) {
-	rep := new(mocks.BalanceRepository)
-	srv := NewBalanceService(rep)
-	rep.On("BalanceOperation", mock.Anything, mock.AnythingOfType("*model.Balance")).Return(nil).Once()
-
-	testBalance.Operation = -100.7
-	err := srv.Deposit(context.Background(), testBalance)
-	require.Error(t, err)
-
-	testBalance.Operation = 0
-	err = srv.Deposit(context.Background(), testBalance)
-	require.Error(t, err)
 }
 
 func TestGetBalance(t *testing.T) {
@@ -51,7 +37,7 @@ func TestGetBalance(t *testing.T) {
 	rep.On("BalanceOperation", mock.Anything, mock.AnythingOfType("*model.Balance")).Return(nil).Once()
 	rep.On("GetBalance", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(testBalance.Operation, nil).Once()
 
-	err := srv.Deposit(context.Background(), testBalance)
+	err := srv.BalanceOperation(context.Background(), testBalance)
 	require.NoError(t, err)
 
 	money, err := srv.GetBalance(context.Background(), testBalance.BalanceID)

@@ -15,8 +15,7 @@ import (
 
 // BalanceService is an interface that contains methods of service for balance
 type BalanceService interface {
-	Deposit(ctx context.Context, balance *model.Balance) error
-	// Withdraw(ctx context.Context, balance *model.Balance) error
+	BalanceOperation(ctx context.Context, balance *model.Balance) error
 	GetBalance(ctx context.Context, profileID uuid.UUID) (float64, error)
 }
 
@@ -32,83 +31,51 @@ func NewEntityBalance(srvBalance BalanceService, validate *validator.Validate) *
 	return &EntityBalance{srvBalance: srvBalance, validate: validate}
 }
 
-// nolint dupl
-// Deposit calls SignUp method of Service by handler
-func (b *EntityBalance) Deposit(ctx context.Context, req *bproto.DepositRequest) (*bproto.DepositResponse, error) {
-	profileUUID, err := uuid.Parse(req.Balance.Profileid)
+// BalanceOperation calls BalanceOperation method of Service by handler
+func (b *EntityBalance) BalanceOperation(ctx context.Context, req *bproto.BalanceOperationRequest) (*bproto.BalanceOperationResponse, error) {
+	profileid := req.Balance.Profileid
+	err := b.validate.VarCtx(ctx, profileid, "required,uuid")
 	if err != nil {
-		return &bproto.DepositResponse{}, fmt.Errorf("failed to parse Profileid")
+		logrus.Errorf("error: %v", err)
+		return &bproto.BalanceOperationResponse{}, fmt.Errorf("EntityBalance-BalanceOperation: failed to validate profile id")
+	}
+	profileUUID, err := uuid.Parse(profileid)
+	if err != nil {
+		return &bproto.BalanceOperationResponse{}, fmt.Errorf("EntityBalance-BalanceOperation: failed to parse Profileid")
 	}
 	createdOperation := &model.Balance{
 		BalanceID: uuid.New(),
 		ProfileID: profileUUID,
 		Operation: req.Balance.Operation,
 	}
-
-	// err = b.validate.VarCtx(ctx, createdOperation.Operation, "required,gt=0")
-	// if err != nil {
-	// 	logrus.Errorf("error: %v", err)
-	// 	return &bproto.DepositResponse{}, fmt.Errorf("failed to validate")
-	// }
-
-	err = b.srvBalance.Deposit(ctx, createdOperation)
+	err = b.srvBalance.BalanceOperation(ctx, createdOperation)
 	if err != nil {
 		logrus.Errorf("error: %v", err)
-		return &bproto.DepositResponse{}, fmt.Errorf("failed to Deposit")
+		return &bproto.BalanceOperationResponse{}, fmt.Errorf("EntityBalance-BalanceOperation: failed to made opeartion")
 	}
 	strOperation := strconv.FormatFloat(req.Balance.Operation, 'f', -1, 64)
-	return &bproto.DepositResponse{
+	return &bproto.BalanceOperationResponse{
 		Operation: strOperation,
 	}, nil
 }
 
-// // nolint dupl
-// // Withdraw calls SignUp method of Service by handler
-// func (b *EntityBalance) Withdraw(ctx context.Context, req *bproto.WithdrawRequest) (*bproto.WithdrawResponse, error) {
-// 	profileUUID, err := uuid.Parse(req.Balance.Profileid)
-// 	if err != nil {
-// 		return &bproto.WithdrawResponse{}, fmt.Errorf("failed to parse profileid")
-// 	}
-// 	createdOperation := &model.Balance{
-// 		BalanceID: uuid.New(),
-// 		ProfileID: profileUUID,
-// 		Operation: req.Balance.Operation,
-// 	}
-
-// 	err = b.validate.VarCtx(ctx, createdOperation.Operation, "required,gt=0")
-// 	if err != nil {
-// 		logrus.Errorf("error: %v", err)
-// 		return &bproto.WithdrawResponse{}, fmt.Errorf("failed to validate")
-// 	}
-
-// 	err = b.srvBalance.Withdraw(ctx, createdOperation)
-// 	if err != nil {
-// 		logrus.Errorf("error: %v", err)
-// 		return &bproto.WithdrawResponse{}, fmt.Errorf("failed to withdraw")
-// 	}
-// 	strOperation := strconv.FormatFloat(req.Balance.Operation, 'f', -1, 64)
-// 	return &bproto.WithdrawResponse{
-// 		Operation: strOperation,
-// 	}, nil
-// }
-
-// GetBalance calls SignUp method of Service by handler
+// GetBalance is mecalls SignUp method of Service by handler
 func (b *EntityBalance) GetBalance(ctx context.Context, req *bproto.GetBalanceRequest) (*bproto.GetBalanceResponse, error) {
 	id := req.Profileid
-	// err := b.validate.VarCtx(ctx, id, "required,uuid")
-	// if err != nil {
-	// 	logrus.Errorf("error: %v", err)
-	// 	return &bproto.GetBalanceResponse{}, fmt.Errorf("failed to validate")
-	// }
+	err := b.validate.VarCtx(ctx, id, "required,uuid")
+	if err != nil {
+		logrus.Errorf("error: %v", err)
+		return &bproto.GetBalanceResponse{}, fmt.Errorf("EntityBalance-GetBalance: failed to validate id")
+	}
 	idUUID, err := uuid.Parse(id)
 	if err != nil {
 		logrus.Errorf("error: %v", err)
-		return &bproto.GetBalanceResponse{}, fmt.Errorf("failed to parse id")
+		return &bproto.GetBalanceResponse{}, fmt.Errorf("EntityBalance-GetBalance: failed to parse id")
 	}
 	money, err := b.srvBalance.GetBalance(ctx, idUUID)
 	if err != nil {
 		logrus.Errorf("error: %v", err)
-		return &bproto.GetBalanceResponse{}, fmt.Errorf("failed to Get Balance")
+		return &bproto.GetBalanceResponse{}, fmt.Errorf("EntityBalance-GetBalance: failed to get balance")
 	}
 	return &bproto.GetBalanceResponse{
 		Money: money,

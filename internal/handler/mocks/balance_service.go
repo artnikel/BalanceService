@@ -17,8 +17,8 @@ type BalanceService struct {
 	mock.Mock
 }
 
-// Deposit provides a mock function with given fields: ctx, balance
-func (_m *BalanceService) Deposit(ctx context.Context, balance *model.Balance) error {
+// BalanceOperation provides a mock function with given fields: ctx, balance
+func (_m *BalanceService) BalanceOperation(ctx context.Context, balance *model.Balance) error {
 	ret := _m.Called(ctx, balance)
 
 	var r0 error
@@ -50,20 +50,6 @@ func (_m *BalanceService) GetBalance(ctx context.Context, profileID uuid.UUID) (
 	}
 
 	return r0, r1
-}
-
-// Withdraw provides a mock function with given fields: ctx, balance
-func (_m *BalanceService) Withdraw(ctx context.Context, balance *model.Balance) error {
-	ret := _m.Called(ctx, balance)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *model.Balance) error); ok {
-		r0 = rf(ctx, balance)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
 }
 
 type mockConstructorTestingTNewBalanceService interface {

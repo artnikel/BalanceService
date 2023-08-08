@@ -22,7 +22,7 @@ var (
 	v = validator.New()
 )
 
-func TestDepositAndWithDraw(t *testing.T) {
+func TestBalanceOperation(t *testing.T) {
 	srv := new(mocks.BalanceService)
 	hndl := NewEntityBalance(srv, v)
 	protoBalance := &bproto.Balance{
@@ -30,8 +30,8 @@ func TestDepositAndWithDraw(t *testing.T) {
 		Profileid: testBalance.ProfileID.String(),
 		Operation: testBalance.Operation,
 	}
-	srv.On("Deposit", mock.Anything, mock.AnythingOfType("*model.Balance")).Return(nil).Once()
-	_, err := hndl.Deposit(context.Background(), &bproto.DepositRequest{
+	srv.On("BalanceOperation", mock.Anything, mock.AnythingOfType("*model.Balance")).Return(nil).Once()
+	_, err := hndl.BalanceOperation(context.Background(), &bproto.BalanceOperationRequest{
 		Balance: protoBalance,
 	})
 	require.NoError(t, err)
@@ -46,8 +46,8 @@ func TestGetBalance(t *testing.T) {
 		Profileid: testBalance.ProfileID.String(),
 		Operation: testBalance.Operation,
 	}
-	srv.On("Deposit", mock.Anything, mock.AnythingOfType("*model.Balance")).Return(nil).Once()
-	_, err := hndl.Deposit(context.Background(), &bproto.DepositRequest{
+	srv.On("BalanceOperation", mock.Anything, mock.AnythingOfType("*model.Balance")).Return(nil).Once()
+	_, err := hndl.BalanceOperation(context.Background(), &bproto.BalanceOperationRequest{
 		Balance: protoBalance,
 	})
 	require.NoError(t, err)
