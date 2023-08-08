@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/artnikel/BalanceService/bproto"
 	"github.com/artnikel/BalanceService/internal/handler/mocks"
 	"github.com/artnikel/BalanceService/internal/model"
+	"github.com/artnikel/BalanceService/proto"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
@@ -25,13 +25,13 @@ var (
 func TestBalanceOperation(t *testing.T) {
 	srv := new(mocks.BalanceService)
 	hndl := NewEntityBalance(srv, v)
-	protoBalance := &bproto.Balance{
+	protoBalance := &proto.Balance{
 		Balanceid: testBalance.BalanceID.String(),
 		Profileid: testBalance.ProfileID.String(),
 		Operation: testBalance.Operation,
 	}
 	srv.On("BalanceOperation", mock.Anything, mock.AnythingOfType("*model.Balance")).Return(nil).Once()
-	_, err := hndl.BalanceOperation(context.Background(), &bproto.BalanceOperationRequest{
+	_, err := hndl.BalanceOperation(context.Background(), &proto.BalanceOperationRequest{
 		Balance: protoBalance,
 	})
 	require.NoError(t, err)
@@ -41,13 +41,13 @@ func TestBalanceOperation(t *testing.T) {
 func TestWrnogBalanceOperation(t *testing.T) {
 	srv := new(mocks.BalanceService)
 	hndl := NewEntityBalance(srv, v)
-	protoBalance := &bproto.Balance{
+	protoBalance := &proto.Balance{
 		Balanceid: testBalance.BalanceID.String(),
 		Profileid: "",
 		Operation: testBalance.Operation,
 	}
 	srv.On("BalanceOperation", mock.Anything, mock.AnythingOfType("*model.Balance")).Return(nil).Once()
-	_, err := hndl.BalanceOperation(context.Background(), &bproto.BalanceOperationRequest{
+	_, err := hndl.BalanceOperation(context.Background(), &proto.BalanceOperationRequest{
 		Balance: protoBalance,
 	})
 	require.Error(t, err)
@@ -56,18 +56,18 @@ func TestWrnogBalanceOperation(t *testing.T) {
 func TestGetBalance(t *testing.T) {
 	srv := new(mocks.BalanceService)
 	hndl := NewEntityBalance(srv, v)
-	protoBalance := &bproto.Balance{
+	protoBalance := &proto.Balance{
 		Balanceid: testBalance.BalanceID.String(),
 		Profileid: testBalance.ProfileID.String(),
 		Operation: testBalance.Operation,
 	}
 	srv.On("BalanceOperation", mock.Anything, mock.AnythingOfType("*model.Balance")).Return(nil).Once()
-	_, err := hndl.BalanceOperation(context.Background(), &bproto.BalanceOperationRequest{
+	_, err := hndl.BalanceOperation(context.Background(), &proto.BalanceOperationRequest{
 		Balance: protoBalance,
 	})
 	require.NoError(t, err)
 	srv.On("GetBalance", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(testBalance.Operation, nil).Once()
-	resp, err := hndl.GetBalance(context.Background(), &bproto.GetBalanceRequest{
+	resp, err := hndl.GetBalance(context.Background(), &proto.GetBalanceRequest{
 		Profileid: protoBalance.Profileid,
 	})
 
@@ -79,11 +79,11 @@ func TestGetBalance(t *testing.T) {
 func TestGetBalanceByWrongID(t *testing.T) {
 	srv := new(mocks.BalanceService)
 	hndl := NewEntityBalance(srv, v)
-	protoBalance := &bproto.Balance{
+	protoBalance := &proto.Balance{
 		Profileid: "",
 	}
 	srv.On("GetBalance", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(testBalance.Operation, nil).Once()
-	resp, err := hndl.GetBalance(context.Background(), &bproto.GetBalanceRequest{
+	resp, err := hndl.GetBalance(context.Background(), &proto.GetBalanceRequest{
 		Profileid: protoBalance.Profileid,
 	})
 	require.Error(t, err)

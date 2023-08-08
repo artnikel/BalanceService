@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/artnikel/BalanceService/bproto"
 	"github.com/artnikel/BalanceService/internal/model"
+	"github.com/artnikel/BalanceService/proto"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -23,7 +23,7 @@ type BalanceService interface {
 type EntityBalance struct {
 	srvBalance BalanceService
 	validate   *validator.Validate
-	bproto.UnimplementedBalanceServiceServer
+	proto.UnimplementedBalanceServiceServer
 }
 
 // NewEntityBalance accepts User Service interface and returns an object of *EntityUser
@@ -32,16 +32,16 @@ func NewEntityBalance(srvBalance BalanceService, validate *validator.Validate) *
 }
 
 // BalanceOperation calls BalanceOperation method of Service by handler
-func (b *EntityBalance) BalanceOperation(ctx context.Context, req *bproto.BalanceOperationRequest) (*bproto.BalanceOperationResponse, error) {
+func (b *EntityBalance) BalanceOperation(ctx context.Context, req *proto.BalanceOperationRequest) (*proto.BalanceOperationResponse, error) {
 	profileid := req.Balance.Profileid
 	err := b.validate.VarCtx(ctx, profileid, "required,uuid")
 	if err != nil {
 		logrus.Errorf("error: %v", err)
-		return &bproto.BalanceOperationResponse{}, fmt.Errorf("EntityBalance-BalanceOperation: failed to validate profile id")
+		return &proto.BalanceOperationResponse{}, fmt.Errorf("EntityBalance-BalanceOperation: failed to validate profile id")
 	}
 	profileUUID, err := uuid.Parse(profileid)
 	if err != nil {
-		return &bproto.BalanceOperationResponse{}, fmt.Errorf("EntityBalance-BalanceOperation: failed to parse Profileid")
+		return &proto.BalanceOperationResponse{}, fmt.Errorf("EntityBalance-BalanceOperation: failed to parse Profileid")
 	}
 	createdOperation := &model.Balance{
 		BalanceID: uuid.New(),
@@ -51,33 +51,33 @@ func (b *EntityBalance) BalanceOperation(ctx context.Context, req *bproto.Balanc
 	err = b.srvBalance.BalanceOperation(ctx, createdOperation)
 	if err != nil {
 		logrus.Errorf("error: %v", err)
-		return &bproto.BalanceOperationResponse{}, fmt.Errorf("EntityBalance-BalanceOperation: failed to made opeartion")
+		return &proto.BalanceOperationResponse{}, fmt.Errorf("EntityBalance-BalanceOperation: failed to made opeartion")
 	}
 	strOperation := strconv.FormatFloat(req.Balance.Operation, 'f', -1, 64)
-	return &bproto.BalanceOperationResponse{
+	return &proto.BalanceOperationResponse{
 		Operation: strOperation,
 	}, nil
 }
 
 // GetBalance is mecalls SignUp method of Service by handler
-func (b *EntityBalance) GetBalance(ctx context.Context, req *bproto.GetBalanceRequest) (*bproto.GetBalanceResponse, error) {
+func (b *EntityBalance) GetBalance(ctx context.Context, req *proto.GetBalanceRequest) (*proto.GetBalanceResponse, error) {
 	id := req.Profileid
 	err := b.validate.VarCtx(ctx, id, "required,uuid")
 	if err != nil {
 		logrus.Errorf("error: %v", err)
-		return &bproto.GetBalanceResponse{}, fmt.Errorf("EntityBalance-GetBalance: failed to validate id")
+		return &proto.GetBalanceResponse{}, fmt.Errorf("EntityBalance-GetBalance: failed to validate id")
 	}
 	idUUID, err := uuid.Parse(id)
 	if err != nil {
 		logrus.Errorf("error: %v", err)
-		return &bproto.GetBalanceResponse{}, fmt.Errorf("EntityBalance-GetBalance: failed to parse id")
+		return &proto.GetBalanceResponse{}, fmt.Errorf("EntityBalance-GetBalance: failed to parse id")
 	}
 	money, err := b.srvBalance.GetBalance(ctx, idUUID)
 	if err != nil {
 		logrus.Errorf("error: %v", err)
-		return &bproto.GetBalanceResponse{}, fmt.Errorf("EntityBalance-GetBalance: failed to get balance")
+		return &proto.GetBalanceResponse{}, fmt.Errorf("EntityBalance-GetBalance: failed to get balance")
 	}
-	return &bproto.GetBalanceResponse{
+	return &proto.GetBalanceResponse{
 		Money: money,
 	}, nil
 }
