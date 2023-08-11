@@ -9,6 +9,7 @@ import (
 	"github.com/artnikel/BalanceService/internal/model"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/shopspring/decimal"
 )
 
 // PgRepository represents the PostgreSQL repository implementation.
@@ -77,16 +78,16 @@ func (p *PgRepository) GetBalance(ctx context.Context, profileID uuid.UUID) (flo
 	}
 	defer rows.Close()
 
-	var money float64
+	var money decimal.Decimal
 
 	for rows.Next() {
-		var operation float64
+		var operation decimal.Decimal
 		err := rows.Scan(&operation)
 		if err != nil {
 			return 0, fmt.Errorf("BalanceService-GetBalance: error in method rows.Scan:%w", err)
 		}
-		money += operation
+		money = money.Add(operation)
 	}
 
-	return money, nil
+	return money.InexactFloat64(), nil
 }

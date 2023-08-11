@@ -10,6 +10,7 @@ import (
 	"github.com/artnikel/BalanceService/proto"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 )
 
@@ -46,7 +47,7 @@ func (b *EntityBalance) BalanceOperation(ctx context.Context, req *proto.Balance
 	createdOperation := &model.Balance{
 		BalanceID: uuid.New(),
 		ProfileID: profileUUID,
-		Operation: req.Balance.Operation,
+		Operation: decimal.NewFromFloat(req.Balance.Operation),
 	}
 	err = b.srvBalance.BalanceOperation(ctx, createdOperation)
 	if err != nil {

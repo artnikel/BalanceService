@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/ory/dockertest"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/require"
 )
 
@@ -19,7 +20,7 @@ var (
 	testBalance = &model.Balance{
 		BalanceID: uuid.New(),
 		ProfileID: uuid.New(),
-		Operation: 100.9,
+		Operation: decimal.NewFromFloat(100.9),
 	}
 )
 
@@ -82,22 +83,22 @@ func TestOperationWithGetBalance(t *testing.T) {
 	require.NoError(t, err)
 	money, err := pg.GetBalance(context.Background(), testBalance.ProfileID)
 	require.NoError(t, err)
-	require.Equal(t, money, testBalance.Operation)
+	require.Equal(t, money, testBalance.Operation.InexactFloat64())
 }
 
 func TestBalanceOperations(t *testing.T) {
 	testBalance.ProfileID = uuid.New()
 	testBalance.BalanceID = uuid.New()
-	testBalance.Operation = 800.5
+	testBalance.Operation = decimal.NewFromFloat(800.5)
 	err := pg.BalanceOperation(context.Background(), testBalance)
 	require.NoError(t, err)
-	testBalance.Operation = -700.5
+	testBalance.Operation = decimal.NewFromFloat(-700.5)
 	testBalance.BalanceID = uuid.New()
 	err = pg.BalanceOperation(context.Background(), testBalance)
 	require.NoError(t, err)
 	money, err := pg.GetBalance(context.Background(), testBalance.ProfileID)
 	require.NoError(t, err)
-	require.Equal(t, money, 100.0)
+	require.Equal(t, decimal.NewFromFloat(money), decimal.NewFromFloat(100.0))
 }
 
 func TestGetBalanceByFakeID(t *testing.T) {
