@@ -11,14 +11,13 @@ import (
 	"github.com/artnikel/BalanceService/internal/repository"
 	"github.com/artnikel/BalanceService/internal/service"
 	"github.com/artnikel/BalanceService/proto"
-	"github.com/caarlos0/env"
 	"github.com/go-playground/validator/v10"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"google.golang.org/grpc"
 )
 
-func connectPostgres(cfg *config.Variables) (*pgxpool.Pool, error) {
-	cfgPostgres, err := pgxpool.ParseConfig(cfg.PostgresConnBalance)
+func connectPostgres(connString string) (*pgxpool.Pool, error) {
+	cfgPostgres, err := pgxpool.ParseConfig(connString)
 	if err != nil {
 		return nil, err
 	}
@@ -31,14 +30,12 @@ func connectPostgres(cfg *config.Variables) (*pgxpool.Pool, error) {
 
 // nolint gocritic
 func main() {
-	var (
-		cfg config.Variables
-		v   = validator.New()
-	)
-	if err := env.Parse(&cfg); err != nil {
-		log.Fatal("could not parse config: ", err)
+	v := validator.New()
+	cfg, err := config.New()
+	if err != nil {
+		log.Fatal("Could not parse config: ", err)
 	}
-	dbpool, errPool := connectPostgres(&cfg)
+	dbpool, errPool := connectPostgres(cfg.PostgresConnBalance)
 	if errPool != nil {
 		log.Fatal("could not construct the pool: ", errPool)
 	}
