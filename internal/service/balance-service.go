@@ -28,17 +28,23 @@ func NewBalanceService(bRep BalanceRepository) *BalanceService {
 
 // BalanceOperation is a method of BalanceService that calls  method of Repository
 func (b *BalanceService) BalanceOperation(ctx context.Context, balance *model.Balance) error {
-	money, err := b.GetBalance(ctx, balance.ProfileID)
-	if err != nil {
-		return fmt.Errorf("BalanceService-BalanceOperation-GetBalance: error:%v", err)
-	}
 	if balance.Operation.IsNegative() {
+		money, err := b.GetBalance(ctx, balance.ProfileID)
+		if err != nil {
+			return fmt.Errorf("BalanceService-BalanceOperation-GetBalance: error:%v", err)
+		}
 		if decimal.NewFromFloat(money).Cmp(balance.Operation.Abs()) == 1 {
 			err = b.bRep.BalanceOperation(ctx, balance)
 			if err != nil {
 				return fmt.Errorf("BalanceService-BalanceOperation: error:%v", err)
 			}
+			return nil
 		}
+		return fmt.Errorf("BalanceService-BalanceOperation: not enough money")
+	}
+	err := b.bRep.BalanceOperation(ctx, balance)
+	if err != nil {
+		return fmt.Errorf("BalanceService-BalanceOperation: error:%v", err)
 	}
 	return nil
 }
