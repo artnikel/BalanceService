@@ -7,6 +7,7 @@ import (
 
 	"github.com/artnikel/BalanceService/internal/model"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 // BalanceRepository is interface with methods for balance operations
@@ -27,9 +28,17 @@ func NewBalanceService(bRep BalanceRepository) *BalanceService {
 
 // BalanceOperation is a method of BalanceService that calls  method of Repository
 func (b *BalanceService) BalanceOperation(ctx context.Context, balance *model.Balance) error {
-	err := b.bRep.BalanceOperation(ctx, balance)
+	money, err := b.GetBalance(ctx, balance.ProfileID)
 	if err != nil {
-		return fmt.Errorf("BalanceService-BalanceOperation: error:%v", err)
+		return fmt.Errorf("BalanceService-BalanceOperation-GetBalance: error:%v", err)
+	}
+	if balance.Operation.IsNegative() {
+		if decimal.NewFromFloat(money).Cmp(balance.Operation.Abs()) == 1 {
+			err = b.bRep.BalanceOperation(ctx, balance)
+			if err != nil {
+				return fmt.Errorf("BalanceService-BalanceOperation: error:%v", err)
+			}
+		}
 	}
 	return nil
 }
