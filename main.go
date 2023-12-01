@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 
@@ -33,11 +34,11 @@ func main() {
 	v := validator.New()
 	cfg, err := config.New()
 	if err != nil {
-		log.Fatal("Could not parse config: ", err)
+		log.Fatalf("could not parse config: %v", err)
 	}
 	dbpool, errPool := connectPostgres(cfg.PostgresConnBalance)
 	if errPool != nil {
-		log.Fatal("could not construct the pool: ", errPool)
+		log.Fatalf("could not construct the pool: %v", errPool)
 	}
 	defer dbpool.Close()
 	pgRep := repository.NewPgRepository(dbpool)
@@ -45,12 +46,13 @@ func main() {
 	pgHandl := handler.NewEntityBalance(pgServ, v)
 	lis, err := net.Listen("tcp", "localhost:8095")
 	if err != nil {
-		log.Fatalf("Cannot create listener: %s", err)
+		log.Fatalf("cannot create listener: %s", err)
 	}
+	fmt.Println("Balance Service started")
 	grpcServer := grpc.NewServer()
 	proto.RegisterBalanceServiceServer(grpcServer, pgHandl)
 	err = grpcServer.Serve(lis)
 	if err != nil {
-		log.Fatalf("Failed to serve listener: %s", err)
+		log.Fatalf("failed to serve listener: %s", err)
 	}
 }

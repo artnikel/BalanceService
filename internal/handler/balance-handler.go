@@ -38,11 +38,11 @@ func (b *EntityBalance) BalanceOperation(ctx context.Context, req *proto.Balance
 	err := b.validate.VarCtx(ctx, profileid, "required,uuid")
 	if err != nil {
 		logrus.Errorf("error: %v", err)
-		return &proto.BalanceOperationResponse{}, fmt.Errorf("EntityBalance-BalanceOperation: failed to validate profile id")
+		return &proto.BalanceOperationResponse{}, fmt.Errorf("varCtx %w", err)
 	}
 	profileUUID, err := uuid.Parse(profileid)
 	if err != nil {
-		return &proto.BalanceOperationResponse{}, fmt.Errorf("EntityBalance-BalanceOperation: failed to parse Profileid")
+		return &proto.BalanceOperationResponse{}, fmt.Errorf("parse %w", err)
 	}
 	createdOperation := &model.Balance{
 		BalanceID: uuid.New(),
@@ -52,7 +52,7 @@ func (b *EntityBalance) BalanceOperation(ctx context.Context, req *proto.Balance
 	err = b.srvBalance.BalanceOperation(ctx, createdOperation)
 	if err != nil {
 		logrus.Errorf("error: %v", err)
-		return &proto.BalanceOperationResponse{}, fmt.Errorf("EntityBalance-BalanceOperation: failed to made opeartion")
+		return &proto.BalanceOperationResponse{}, fmt.Errorf("balanceOperations %w", err)
 	}
 	strOperation := strconv.FormatFloat(req.Balance.Operation, 'f', -1, 64)
 	return &proto.BalanceOperationResponse{
@@ -66,17 +66,17 @@ func (b *EntityBalance) GetBalance(ctx context.Context, req *proto.GetBalanceReq
 	err := b.validate.VarCtx(ctx, id, "required,uuid")
 	if err != nil {
 		logrus.Errorf("error: %v", err)
-		return &proto.GetBalanceResponse{}, fmt.Errorf("EntityBalance-GetBalance: failed to validate id")
+		return &proto.GetBalanceResponse{}, fmt.Errorf("varCtx %w", err)
 	}
 	idUUID, err := uuid.Parse(id)
 	if err != nil {
 		logrus.Errorf("error: %v", err)
-		return &proto.GetBalanceResponse{}, fmt.Errorf("EntityBalance-GetBalance: failed to parse id")
+		return &proto.GetBalanceResponse{}, fmt.Errorf("parse %w", err)
 	}
 	money, err := b.srvBalance.GetBalance(ctx, idUUID)
 	if err != nil {
 		logrus.Errorf("error: %v", err)
-		return &proto.GetBalanceResponse{}, fmt.Errorf("EntityBalance-GetBalance: failed to get balance")
+		return &proto.GetBalanceResponse{}, fmt.Errorf("getBalance %w", err)
 	}
 	return &proto.GetBalanceResponse{
 		Money: money,

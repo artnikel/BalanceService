@@ -1,4 +1,4 @@
-create table balance (
+CREATE TABLE IF NOT EXISTS balance (
 	balanceid uuid,
 	profileid uuid,
 	operation double precision,
