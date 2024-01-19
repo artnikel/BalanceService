@@ -8,6 +8,7 @@ import (
 	"github.com/artnikel/BalanceService/internal/model"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
+	berrors "github.com/artnikel/BalanceService/internal/errors"
 )
 
 // BalanceRepository is interface with methods for balance operations
@@ -40,7 +41,7 @@ func (b *BalanceService) BalanceOperation(ctx context.Context, balance *model.Ba
 			}
 			return nil
 		}
-		return fmt.Errorf("not enough money")
+		return berrors.New(berrors.NotEnoughMoney)
 	}
 	err := b.bRep.BalanceOperation(ctx, balance)
 	if err != nil {

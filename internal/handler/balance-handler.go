@@ -3,9 +3,11 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 
+	berrors "github.com/artnikel/BalanceService/internal/errors"
 	"github.com/artnikel/BalanceService/internal/model"
 	"github.com/artnikel/BalanceService/proto"
 	"github.com/go-playground/validator/v10"
@@ -51,6 +53,10 @@ func (b *EntityBalance) BalanceOperation(ctx context.Context, req *proto.Balance
 	}
 	err = b.srvBalance.BalanceOperation(ctx, createdOperation)
 	if err != nil {
+		var e *berrors.BusinessError
+		if errors.As(err, &e) {
+			return &proto.BalanceOperationResponse{}, err
+		}
 		logrus.Errorf("error: %v", err)
 		return &proto.BalanceOperationResponse{}, fmt.Errorf("balanceOperations %w", err)
 	}
