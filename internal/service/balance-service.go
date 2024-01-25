@@ -5,10 +5,10 @@ import (
 	"context"
 	"fmt"
 
+	berrors "github.com/artnikel/BalanceService/internal/errors"
 	"github.com/artnikel/BalanceService/internal/model"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
-	berrors "github.com/artnikel/BalanceService/internal/errors"
 )
 
 // BalanceRepository is interface with methods for balance operations
