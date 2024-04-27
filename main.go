@@ -44,7 +44,7 @@ func main() {
 	pgRep := repository.NewPgRepository(dbpool)
 	pgServ := service.NewBalanceService(pgRep)
 	pgHandl := handler.NewEntityBalance(pgServ, v)
-	lis, err := net.Listen("tcp", "localhost:8095")
+	lis, err := net.Listen("tcp", cfg.BalanceAddress)
 	if err != nil {
 		log.Fatalf("cannot create listener: %s", err)
 	}
