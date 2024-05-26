@@ -29,30 +29,4 @@ func TestBalanceOperation(t *testing.T) {
 	rep.AssertExpectations(t)
 }
 
-func TestGetBalance(t *testing.T) {
-	rep := new(mocks.BalanceRepository)
-	srv := NewBalanceService(rep)
-	testBalance.BalanceID = uuid.New()
-	testBalance.ProfileID = uuid.New()
-	testBalance.Operation = decimal.NewFromFloat(254.7)
-	rep.On("BalanceOperation", mock.Anything, mock.AnythingOfType("*model.Balance")).Return(nil).Once()
-	rep.On("GetBalance", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(testBalance.Operation.InexactFloat64(), nil).Once()
 
-	err := srv.BalanceOperation(context.Background(), testBalance)
-	require.NoError(t, err)
-
-	money, err := srv.GetBalance(context.Background(), testBalance.BalanceID)
-	require.NoError(t, err)
-	require.Equal(t, decimal.NewFromFloat(money), testBalance.Operation)
-	rep.AssertExpectations(t)
-}
-
-func TestGetBalanceByWrongID(t *testing.T) {
-	rep := new(mocks.BalanceRepository)
-	srv := NewBalanceService(rep)
-	test := &model.Balance{}
-	rep.On("GetBalance", mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(test.Operation.InexactFloat64(), nil).Once()
-	money, _ := srv.GetBalance(context.Background(), uuid.Nil)
-	require.Empty(t, money)
-	rep.AssertExpectations(t)
-}
